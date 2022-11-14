@@ -3,6 +3,6 @@ Content-Type: application/json
 
 {
     "title": "Prueba1",
-    "author": "prueba autor",
+    "author": "prueba autor"
     
 }
