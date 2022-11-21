@@ -10,6 +10,10 @@ const bookSchema = new mongoose.Schema({
   author: String,
   year: String,
   read: Boolean,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+  },
 });
 
 bookSchema.set('toJSON', {

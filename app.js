@@ -24,7 +24,7 @@ mongoose
 app.use(express.json());
 app.use(morgan('tiny'));
 
-app.use(usersRouter);
+app.use('/api/users', usersRouter);
 app.use('/api/books', booksRouter);
 
 app.use(middleware.errorHandler);

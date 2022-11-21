@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   passwordHash: String,
   books: {
     type: mongoose.Schema.Types.ObjectId,
+    ref: 'Book',
   },
 });
 
@@ -24,3 +25,5 @@ userSchema.set('toJSON', {
 });
 
 const User = mongoose.model('User', userSchema);
+
+module.exports = User;
