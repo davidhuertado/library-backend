@@ -47,7 +47,6 @@ describe('when there is one user in the db', () => {
       password: 'clave',
     };
     const { body: usersBeforeRequest } = await api.get('/api/users');
-    console.log(usersBeforeRequest.body);
 
     const response = await api.post('/api/users').send(user).expect(400);
 
@@ -55,6 +54,26 @@ describe('when there is one user in the db', () => {
 
     expect(response.body.error).toContain(`username it's not available`);
     expect(usersBeforeRequest).toHaveLength(usersAfterRequest.length);
+  });
+
+  test('fails without username', async () => {
+    const user = {
+      password: 'clave',
+    };
+    const response = await api.post('/api/users').send(user).expect(400);
+    expect(response.body.error).toContain(
+      `must inlclude username and password`
+    );
+  });
+  test('fails with username shorter than 4 characters', async () => {
+    const user = {
+      username: '123',
+      password: 'clave',
+    };
+    const response = await api.post('/api/users').send(user).expect(400);
+    expect(response.body.error).toContain(
+      `username and password needs 4 characters at least`
+    );
   });
 });
 

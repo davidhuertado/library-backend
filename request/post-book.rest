@@ -2,7 +2,8 @@ POST http://localhost:3003/api/books
 Content-Type: application/json
 
 {
-    "title": "Prueba1",
-    "author": "prueba autor"
+    "title": "Prueba  odificado ",
+    "author": "anonimo",
+    "userId": "637c893b68c94b2726c7a1a2"
     
 }
