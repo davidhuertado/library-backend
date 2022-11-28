@@ -18,6 +18,7 @@ const initialBooks = [
 
 beforeEach(async () => {
   await Book.deleteMany({});
+  
   const booksObjects = initialBooks.map((book) => new Book(book));
   const promiseArray = booksObjects.map((object) => object.save());
   await Promise.all(promiseArray);

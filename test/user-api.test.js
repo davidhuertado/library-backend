@@ -75,6 +75,15 @@ describe('when there is one user in the db', () => {
       `username and password needs 4 characters at least`
     );
   });
+  test('login with existing user', async () => {
+    const user = {
+      username: 'admin',
+      password: 'pass123',
+    };
+
+    const response = await api.post('/api/login').send(user).expect(200);
+    expect(response.body.username).toContain('admin');
+  });
 });
 
 afterAll(async () => {

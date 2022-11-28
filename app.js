@@ -9,6 +9,7 @@ const middleware = require('./utils/middleware');
 
 const usersRouter = require('./controllers/users');
 const booksRouter = require('./controllers/books');
+const loginRouter = require('./controllers/login');
 
 const app = express();
 
@@ -23,9 +24,11 @@ mongoose
 
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use(middleware.tokenExtractor);
 
+app.use('/api/login', loginRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/books', booksRouter);
+app.use('/api/books', middleware.userExtractor, booksRouter);
 
 app.use(middleware.errorHandler);
 

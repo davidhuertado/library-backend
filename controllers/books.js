@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 const booksRouter = require('express').Router();
+const jwt = require('jsonwebtoken');
 const Book = require('../models/book');
-const User = require('../models/user');
+// const User = require('../models/user');
 
 booksRouter.get('/', async (req, res, next) => {
   try {
@@ -24,24 +25,37 @@ booksRouter.get('/:id', async (req, res, next) => {
   }
 });
 
+// const getTokenFrom = (req) => {
+//   const authorization = req.get('authorization');
+//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+//     return authorization.substring(7);
+//   }
+//   return null;
+// };
+
 booksRouter.post('/', async (req, res, next) => {
   try {
     const { body } = req;
+    const { user } = req;
 
-    if (!body.title || !body.userId) {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+
+    if (!decodedToken.id) {
+      return res.status(403).json({ error: 'invalid token' });
+    }
+
+    if (!body.title) {
       return res.status(400).json({
         error: 'content missing',
       });
     }
-
-    const user = await User.findById(body.userId);
 
     const book = new Book({
       title: body.title,
       author: body.author || '',
       year: body.year || '',
       read: body.read || false,
-      user: user._id,
+      user: user.id,
     });
 
     const savedBook = await book.save();
@@ -58,9 +72,18 @@ booksRouter.post('/', async (req, res, next) => {
 
 booksRouter.delete('/:id', async (req, res, next) => {
   try {
-    const book = await Book.findByIdAndDelete(req.params.id);
+    const { user } = req;
+    const book = await Book.findById(req.params.id);
 
     if (!book) return res.status(404).end();
+    if (user.id.toString() !== book.user.toString()) {
+      return res.status(403).json({
+        error: 'This user cannot delete this book',
+      });
+    }
+
+    await Book.findByIdAndDelete(req.params.id);
+
     return res.status(204);
   } catch (error) {
     return next(error);
