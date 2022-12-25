@@ -1,12 +1,20 @@
 /* eslint-disable no-underscore-dangle */
 const booksRouter = require('express').Router();
 const jwt = require('jsonwebtoken');
+// const { findById, findByIdAndUpdate } = require('../models/book');
 const Book = require('../models/book');
+const User = require('../models/user');
 // const User = require('../models/user');
 
 booksRouter.get('/', async (req, res, next) => {
   try {
+    const decodedToken = jwt.verify(req.token, process.env.SECRET);
+
+    if (!decodedToken.id) {
+      return res.status(401).json({ error: 'invalid token' });
+    }
     const books = await Book.find({}).populate('user');
+
     return res.status(200).json(books);
   } catch (error) {
     return next(error);
@@ -25,14 +33,6 @@ booksRouter.get('/:id', async (req, res, next) => {
   }
 });
 
-// const getTokenFrom = (req) => {
-//   const authorization = req.get('authorization');
-//   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-//     return authorization.substring(7);
-//   }
-//   return null;
-// };
-
 booksRouter.post('/', async (req, res, next) => {
   try {
     const { body } = req;
@@ -41,7 +41,7 @@ booksRouter.post('/', async (req, res, next) => {
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
 
     if (!decodedToken.id) {
-      return res.status(403).json({ error: 'invalid token' });
+      return res.status(401).json({ error: 'invalid token' });
     }
 
     if (!body.title) {
@@ -49,22 +49,23 @@ booksRouter.post('/', async (req, res, next) => {
         error: 'content missing',
       });
     }
+    const userInDb = await User.findById(decodedToken.id);
 
     const book = new Book({
       title: body.title,
-      author: body.author || '',
-      year: body.year || '',
+      author: body.author || 'N/S',
+      year: body.year || 'N/S',
       read: body.read || false,
       user: user.id,
     });
 
     const savedBook = await book.save();
 
-    user.books = [...user.books, savedBook._id];
+    userInDb.books = [...userInDb.books, savedBook._id];
 
-    await user.save();
+    await userInDb.save();
 
-    return res.status(401).json(savedBook);
+    return res.status(201).json(savedBook);
   } catch (error) {
     return next(error);
   }
@@ -82,11 +83,31 @@ booksRouter.delete('/:id', async (req, res, next) => {
       });
     }
 
-    await Book.findByIdAndDelete(req.params.id);
+    const response = await Book.findByIdAndDelete(req.params.id);
+    console.log(response);
 
-    return res.status(204);
+    return res.status(204).end();
   } catch (error) {
     return next(error);
+  }
+});
+
+booksRouter.put('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { read } = req.body;
+
+    if (typeof read !== 'boolean') return res.status(400).end();
+
+    const updatedBook = await Book.findByIdAndUpdate(
+      id,
+      { read },
+      { new: true }
+    );
+
+    return res.json(updatedBook);
+  } catch (err) {
+    return next(err);
   }
 });
 

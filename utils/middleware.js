@@ -27,6 +27,7 @@ const errorHandler = (error, req, res, next) => {
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
+
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     req.token = authorization.substring(7);
   }
@@ -34,8 +35,13 @@ const tokenExtractor = (req, res, next) => {
 };
 
 const userExtractor = (req, res, next) => {
-  if (req.method === 'POST' || req.method === 'DELETE') {
+  if (
+    req.method === 'POST' ||
+    req.method === 'DELETE' ||
+    req.method === 'GET'
+  ) {
     const { token } = req;
+
     const decodedToken = jwt.verify(token, process.env.SECRET);
     req.user = {
       username: decodedToken.username,
