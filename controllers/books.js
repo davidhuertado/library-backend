@@ -8,6 +8,7 @@ const User = require('../models/user');
 
 booksRouter.get('/', async (req, res, next) => {
   try {
+    console.log(req.token);
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
 
     if (!decodedToken.id) {
