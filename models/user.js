@@ -6,12 +6,15 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    minlength: 3,
+    minlength: 4,
   },
   passwordHash: String,
-  books: {
-    type: mongoose.Schema.Types.ObjectId,
-  },
+  books: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Book',
+    },
+  ],
 });
 
 userSchema.set('toJSON', {
@@ -24,3 +27,5 @@ userSchema.set('toJSON', {
 });
 
 const User = mongoose.model('User', userSchema);
+
+module.exports = User;
