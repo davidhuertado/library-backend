@@ -1,14 +1,11 @@
 /* eslint-disable no-underscore-dangle */
 const booksRouter = require('express').Router();
 const jwt = require('jsonwebtoken');
-// const { findById, findByIdAndUpdate } = require('../models/book');
 const Book = require('../models/book');
 const User = require('../models/user');
-// const User = require('../models/user');
 
 booksRouter.get('/', async (req, res, next) => {
   try {
-    console.log(req.token);
     const decodedToken = jwt.verify(req.token, process.env.SECRET);
 
     if (!decodedToken.id) {
@@ -84,8 +81,7 @@ booksRouter.delete('/:id', async (req, res, next) => {
       });
     }
 
-    const response = await Book.findByIdAndDelete(req.params.id);
-    console.log(response);
+    await Book.findByIdAndDelete(req.params.id);
 
     return res.status(204).end();
   } catch (error) {
