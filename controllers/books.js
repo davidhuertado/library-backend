@@ -100,7 +100,7 @@ booksRouter.put('/:id', async (req, res, next) => {
       id,
       { read },
       { new: true }
-    );
+    ).populate('user');
 
     return res.json(updatedBook);
   } catch (err) {
