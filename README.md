@@ -1,5 +1,9 @@
 # My library
 
+Demo: https://my-library.fly.dev/
+
+![alt text](./screenshot.png 'My library')
+
 ## Background |
 
 This app was made to practice the creation and engineering of a fullstack application.
@@ -34,11 +38,8 @@ This app was made to practice the creation and engineering of a fullstack applic
 - ChakraUI
 - JSONWebToken
 
-## Roadmap and visuals
 
-Demo: https://my-library.fly.dev/
 
-![alt text](./screenshot.png 'My library')
 
 ## Contact info
 
