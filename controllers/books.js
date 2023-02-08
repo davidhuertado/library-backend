@@ -58,12 +58,13 @@ booksRouter.post('/', async (req, res, next) => {
     });
 
     const savedBook = await book.save();
+    const populatedBook = await Book.findById(savedBook.id).populate('user');
 
     userInDb.books = [...userInDb.books, savedBook._id];
 
     await userInDb.save();
 
-    return res.status(201).json(savedBook);
+    return res.status(201).json(populatedBook);
   } catch (error) {
     return next(error);
   }
